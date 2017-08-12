@@ -1,9 +1,14 @@
 open Hw1
 open Hw1_reduction
 
+let lambda = lambda_of_string "(\\x.x) (\\z.((y)(z))) (y)";;
+let theta = lambda_of_string "(z)";;
+if (free_to_subst theta lambda "y") then print_string ("yes\n") else print_string ("no");;
+
+
 let lambda1 = lambda_of_string "(\\x.y) (\\y.y) ";;
 let lambda2 = lambda_of_string "((\\x.a) (\\x.a))";;
-List.iter (fun var -> print_string var) (free_vars lambda2);;                                     
+(* List.iter (fun var -> print_string var) (free_vars lambda2);;     *)                                 
 
 (* Test reduction to normal form *)
 let l1 = lambda_of_string "(\\x. (x x)) ((\\x. y) z)";;
@@ -38,7 +43,7 @@ let test_reduction lambda =
         Printf.printf "\nTime_NATIVE: %f ms\n\n" ((Sys.time() -. end1) *. 1000.0);;
 
 
-test_reduction l1;;
+(* test_reduction l1;;
 test_reduction l2;;
 test_reduction l3;;
 test_reduction l4;;
@@ -46,7 +51,7 @@ test_reduction l5;;
 test_reduction l6;;
 test_reduction l7;;
 test_reduction l8;;
-test_reduction l9;;
+test_reduction l9;; *)
 
 (* Ω combinator is divergent if it has no β-normal form *)
 (* test_reduction omega;;  *)
