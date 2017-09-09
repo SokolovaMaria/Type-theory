@@ -10,32 +10,35 @@ let free_vars l =
             | Abs (x, l) -> get_fv l (SS.add x bound) in 
     let fv = get_fv l SS.empty in 
     SS.elements fv;;
-
-let set_of_list l = 
-        List.fold_left (fun set element -> SS.add element set) SS.empty l;;
-
-let dependent_abstractions lambda var = 
-        (* Returns a pair of bool - whether var is free at this node of 'lambda'
-                                and set -  all abstracted variables, that contain 'var' in their abstraction body *)
-        let rec dfs lambda var = 
-                match lambda with 
-                        | Var x -> if (x = var) then (true, SS.empty) else (false, SS.empty)
-                        | Abs(x, p) -> if (x = var) then (false, SS.empty)
-                                                              else let (free, set) = dfs p var in 
-                                                                     if free then (true, (SS.add x set)) else (false, set) 
-                        | App(p, q) -> let (free_p, set_p) = dfs p var in 
-                                              let (free_q, set_q) = dfs q var in 
-                                              (free_p || free_q, SS.union set_p set_q) in 
-        snd (dfs lambda var);;                                                                                              
-
-
-(* lambda [var := theta] *)
-let free_to_subst theta lambda var =
-        let free_theta = set_of_list (free_vars theta) in 
-        let bound_lambda = dependent_abstractions lambda var in 
-        (SS.inter free_theta bound_lambda) = SS.empty;;
         
-let rec is_normal_form l =
+(*
+    1 - place for subst is not found in this subtree
+    2 - place is found, and theta is free to subst
+    3 - place is found, but theta is not free to subst
+*)
+let free_to_subst theta lambda var = 
+        let fv = SS.of_list (free_vars theta) in 
+        let rec dfs p bound_vars =
+                let intersects s1 s2 = 
+                        not (SS.is_empty (SS.inter s1 s2) ) in 
+                let is_var_free x bound_vars = 
+                        if (x <> var) then 1 
+                        else if (intersects fv bound_vars) then 3 
+                        else 2 in 
+
+                let res res1 res2 = 
+                    if ((res1 = 2) || (res2 = 2)) then 2 else 
+                    if ((res1 = 1) && (res2 = 1)) then 1
+                    else 3 in
+                
+                match p with 
+                    | App(p1, q1) -> res (dfs p1 bound_vars) (dfs q1 bound_vars)
+                    | Abs (x, p1) -> dfs p1 (SS.add x bound_vars)
+                    | Var x ->  is_var_free x bound_vars 
+          in  if ((dfs lambda SS.empty) <> 3) then true else false
+;;
+
+let rec is_normal_form l = 
         let rec check l = 
                 let check_app p q = 
                         match p with 

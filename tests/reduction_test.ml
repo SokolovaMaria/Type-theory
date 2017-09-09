@@ -7,12 +7,13 @@ let eqv2 = lambda_of_string "(\\x.x)(z)";;
 
 let lambda = lambda_of_string "(\\x.x) (\\z.((y)(z))) (y)";;
 let theta = lambda_of_string "(z)";;
-(* if (free_to_subst theta lambda "y") then print_string ("yes\n") else print_string ("no");; *)
+if (free_to_subst theta lambda "y") then print_string ("yes\n") else print_string ("no");;
 
-(* let is_normal = lambda_of_string "((\\x.\\y.(x))) (y))";;
+let is_normal = lambda_of_string "((\\x.\\y.(x))) (y))";;
+if (free_to_subst (lambda_of_string "(y)") (lambda_of_string "(\\x.\\y.(x))") "x") then print_string ("yes\n") else print_string ("no\n");; 
 if (is_normal_form is_normal) then print_string("yes\n") else print_string("no\n");;
-if (free_to_subst (lambda_of_string "(y)") (lambda_of_string "(\\x.\\y.(x))") "x") then print_string ("yes\n") else print_string ("no\n");;
- *)
+
+
 let lambda1 = lambda_of_string "(\\x.y) (\\y.y) ";;
 let lambda2 = lambda_of_string "((\\x.a) (\\x.a))";;
                                 
