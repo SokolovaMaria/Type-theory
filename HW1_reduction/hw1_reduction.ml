@@ -1,11 +1,5 @@
 open Hw1
 
-let rec is_normal_form l = match l with
-    | Var x -> true
-    | App(Abs(x, l1), l2) -> false
-    | App(l1, l2) -> (is_normal_form l1) && (is_normal_form l2)
-    | Abs(x, l2) -> is_normal_form l2;;
-
 module SS = Set.Make(String);;
 
 let free_vars l = 
@@ -41,6 +35,17 @@ let free_to_subst theta lambda var =
         let bound_lambda = dependent_abstractions lambda var in 
         (SS.inter free_theta bound_lambda) = SS.empty;;
         
+let rec is_normal_form l =
+        let rec check l = 
+                let check_app p q = 
+                        match p with 
+                                | Abs(x, p1) -> if (free_to_subst q p x) then false else check p1
+                                | _ -> (check p) && (check q)
+                in match l with
+                        | App(p, q) -> check_app p q
+                        | Abs(x, p) -> check p
+                        | _ -> true
+        in check l;;   
 
 (* m[x := n] *)
 let rec substitute n m x =
@@ -94,7 +99,6 @@ let normal_beta_reduction l =
                                    (found_br, Abs(x, p1)) in 
     snd ( subst_first_beta_redex (get_alpha_equivalent l) );; 
 
-
 (* Get normal form of lambda, using normal reduction order with memoization *)
 
 type ref_lambda = Var_ref of string | Abs_ref of (string * (ref_lambda ref)) | App_ref of ((ref_lambda ref) * (ref_lambda ref)) 
@@ -140,5 +144,4 @@ let reduce_to_normal_form lambda =
                         | Some reduced -> reduction_step reduced
                         | None -> ref_l in                
          let ref_l = ref_lambda_of_lambda (get_alpha_equivalent lambda) in 
-         lambda_of_ref_lambda (reduction_step ref_l);;
-                                                                                   
+         lambda_of_ref_lambda (reduction_step ref_l);;                                                                                           

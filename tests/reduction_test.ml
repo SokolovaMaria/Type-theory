@@ -1,15 +1,21 @@
 open Hw1
 open Hw1_reduction
 
+let eqv1 = lambda_of_string "(\\y.y)(y)";;
+let eqv2 = lambda_of_string "(\\x.x)(z)";;
+(* if (is_alpha_equivalent eqv1 eqv2) then print_string ("yes") else print_string("no");; *)
+
 let lambda = lambda_of_string "(\\x.x) (\\z.((y)(z))) (y)";;
 let theta = lambda_of_string "(z)";;
-if (free_to_subst theta lambda "y") then print_string ("yes\n") else print_string ("no");;
+(* if (free_to_subst theta lambda "y") then print_string ("yes\n") else print_string ("no");; *)
 
-
+(* let is_normal = lambda_of_string "((\\x.\\y.(x))) (y))";;
+if (is_normal_form is_normal) then print_string("yes\n") else print_string("no\n");;
+if (free_to_subst (lambda_of_string "(y)") (lambda_of_string "(\\x.\\y.(x))") "x") then print_string ("yes\n") else print_string ("no\n");;
+ *)
 let lambda1 = lambda_of_string "(\\x.y) (\\y.y) ";;
 let lambda2 = lambda_of_string "((\\x.a) (\\x.a))";;
-(* List.iter (fun var -> print_string var) (free_vars lambda2);;     *)                                 
-
+                                
 (* Test reduction to normal form *)
 let l1 = lambda_of_string "(\\x. (x x)) ((\\x. y) z)";;
 let l2 = lambda_of_string "(\\x. x x x x) (\\x. x)";;
@@ -23,25 +29,29 @@ let l9 = lambda_of_string "((\\l0.((\\l1.((\\l2.((\\l3.((\\l4.((\\l5.((\\l6.((\\
 
 let omega = lambda_of_string "(\\x.((x) (x))) (\\x.((x) (x)))";;
 
-(* Normal form witout memoization *)
-let reduce_to_normal_form_native lambda = 
+
+(* Normal form without memoization *)
+let reduce_to_normal_form_naive lambda = 
         let rec reduce lambda = 
+                (* print_string ((string_of_lambda lambda) ^ "\n"); *)
                 if (is_normal_form lambda) then lambda
                                                           else reduce (normal_beta_reduction lambda) in 
         reduce lambda;; 
 
 let test_reduction lambda = 
         let start1 = Sys.time() in 
-        print_string("Reducing to normal form\n" ^ string_of_lambda(lambda) ^ "\nResult:\n");
+        print_string("Reducing to normal form...\n"  ^ "\nResult:\n");
         let result = reduce_to_normal_form lambda in 
         print_string (string_of_lambda (result));
         if (is_normal_form result) then print_string ("\nOK") else print_string ("\nResult isn't in normal form");
         let end1 = Sys.time() in
         Printf.printf "\nTime_MEMOIZATION: %f ms\n\n" ((end1 -. start1) *. 1000.0);
-        let result1 = reduce_to_normal_form_native lambda in 
+        let result1 = reduce_to_normal_form_naive lambda in 
         print_string (string_of_lambda (result1));
-        Printf.printf "\nTime_NATIVE: %f ms\n\n" ((Sys.time() -. end1) *. 1000.0);;
+        Printf.printf "\nTime_NAIVE: %f ms\n\n" ((Sys.time() -. end1) *. 1000.0);;
 
+let mem1 = lambda_of_string "((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z))))((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z))))((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z))))((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z)))) ((\\y.((y) (a))) ((\\x.x) ((\\z.(\\u.u)) (z))))";;
+test_reduction mem1;;
 
 (* test_reduction l1;;
 test_reduction l2;;
