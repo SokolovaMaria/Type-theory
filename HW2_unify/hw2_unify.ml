@@ -2,8 +2,6 @@ type algebraic_term = Var of string | Fun of string * (algebraic_term list)
 
 module CountMap = Map.Make(String);;
 
-let system_to_equation x = failwith "Not implemented";;
-
 (*Robinson's algorithm*)
 let solve_system system = 
 
@@ -136,5 +134,15 @@ let apply_substitution solution term =
                 subst term;;              
 
 
+
+let rec get_fresh_name sys =
+        let rec get_name term = 
+            match term with
+            | Var x -> x
+            | Fun (f, args) -> f ^ (List.fold_left (^) "" (List.map get_name args))
+        in let names = List.map (fun (l, r) -> get_name l ^ get_name r) sys in
+        "x" ^ (List.fold_left (^) "" names);;
                                                                                                                                 
-                    
+let system_to_equation system = 
+    let name = get_fresh_name system and (lhs, rhs) = List.split system in 
+    (Fun (name, lhs), Fun (name, rhs));;
