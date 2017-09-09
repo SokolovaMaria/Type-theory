@@ -84,10 +84,9 @@ let num1 = HM_Abs("f", HM_Abs ("x", HM_App (f, x)));;
 let book_test = HM_Let("id", HM_Abs("x", HM_Var "x"), HM_App(HM_Var "id", HM_Var "id"));;
 print_string ((check_algorithm_w y_combinator) ^ "\n\n");;
 
-(* print_string ((check_algorithm_w t6t) ^ "\n\n");; *)
-(* print_string ((check_infer_simple_type (App (Var "f", App (Var "f", Var "x")))) ^ "\n\n");;
+print_string ((check_algorithm_w t6t) ^ "\n\n");;
 print_string ((check_algorithm_w t5t) ^ "\n\n");;
 print_string ((check_algorithm_w t8t) ^ "\n\n");;
-print_string ((check_algorithm_w (HM_Abs ("f", HM_Abs ("x", HM_Let ("dd", HM_Abs ("z", HM_App (f, HM_App (f, z))), HM_App (dd, HM_App (dd, HM_App (dd, x)))))))) ^ "\n\n");; *)
+print_string ((check_algorithm_w (HM_Abs ("f", HM_Abs ("x", HM_Let ("dd", HM_Abs ("z", HM_App (f, HM_App (f, z))), HM_App (dd, HM_App (dd, HM_App (dd, x)))))))) ^ "\n\n");; 
 (* 
 print_string ((check_algorithm_w (hm_lambda_of_lambda (lambda_of_string "\\f.\\x.f (f (f x))"))) ^ "\n");; *)        
