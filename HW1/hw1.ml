@@ -74,44 +74,67 @@ let rec merge = function
         let left, right = split list in
             merge (merge_sort left, merge_sort right);;
 
-                     
-let lambda_of_string str = 
-        let rec parse_string s =
-                let pos = ref 0 in
-                let has_next () = if ( !pos < String.length s - 1 ) then true else false in
-                let next_pos () = if ( has_next () ) then pos := ( !pos + 1 ) in
-                let rec skip_ws () = if ( (has_next () ) && ( s.[!pos] = ' ' )) then ( next_pos (); skip_ws () ) in
-                let curr_symbol () = (skip_ws (); s.[!pos]) in
-                let skip_symbol x = if (x = curr_symbol ()) then next_pos () else failwith "unexpected symbol" in 
-                let is_valid x = if ((x >= '0' && x <= '9') || (x >= 'a' && x <= 'z')) then true else false in
-                let get_var_str () = 
-                        let rec get var = 
-                                if ( is_valid (curr_symbol ()) ) 
-                                then (
-                                        var := (!var) ^ (String.make 1 (curr_symbol ()));
-                                        next_pos ();
-                                        get (var)                                                                                                                                                                                                                                                                                                                                                                                                                           
-                                ) else var in 
-                        !(get (ref "")) in
-                 let rec parse_lambda () =
-                        let rec parse () =  
-                            match curr_symbol () with
-                                | '\\' -> ( skip_symbol '\\'; parse_abs () )
-                                | '(' -> ( skip_symbol '('; let lambda = parse_lambda () in skip_symbol ')'; lambda )
-                                | _ ->  parse_var()  
+module CharSet = Set.Make(Char);;
 
-                        and parse_var () = let var = get_var_str () in Var(var) 
-                        and parse_abs () = (let var = get_var_str () in skip_symbol '.'; let lambda = parse () in Abs (var, lambda)) 
-                        and parse_app left = App( left, parse () ) 
-                        and get_lambda () = 
-                                let lambda = ref (parse ()) in 
-                                while (has_next() && curr_symbol () <> ')') do 
-                                        lambda := parse_app (!lambda);
-                                done;
-                                !lambda in 
-                        get_lambda () in 
-                parse_lambda() in 
-        parse_string (str ^ ";");;
+let lambda_of_string x = 
+    let rec parse s =
+            let symbols = 
+                CharSet.of_list ['a';'b';'c';'d';'e';'f';'g';'h';'i';'j';'k';'l';'m';'n';'o';'p';'q';'r'; 's';'t';'u';'v';'w';'x';'y';'z';
+                                        '0';'1';'2'; '3';'4';'5';'6';'7';'8';'9';'_'] in
+            let pos = ref 0 in
+            let has_next () = 
+                    (!pos < String.length s - 1) in
+            let next () = 
+                    if has_next() 
+                        then pos := (!pos + 1) in
+            let rec skip_ws () = 
+                    if ((s.[!pos] = ' ') && (has_next())) 
+                            then (next (); 
+                                     skip_ws()) in
+            let curr_symbol () = 
+                    skip_ws (); 
+                    s.[!pos] in
+            let skip x = 
+                    if (curr_symbol() <> x )
+                        then failwith "unexpected symbol" 
+                        else next() in
+            let get_var_str () = 
+                    let is_valid x = (x = s.[!pos]) in
+                    let rec rec_get x = if (CharSet.exists is_valid symbols)
+                        then ( x :=  (!x)^(String.make 1 (curr_symbol()));
+                                next();
+                                rec_get x) 
+                        else x in
+                    !(rec_get (ref "")) in
+
+            let rec parse_lambda() =
+                    let rec get_lambda x = 
+                        match x with
+                            | '(' -> (skip '(' ; let lambda = parse_lambda() in (skip ')'; lambda))
+                            | '\\' -> (skip '\\'; parse_abs())
+                            | _ -> parse_var()
+
+                and parse_app l1 = 
+                        App(l1, get_lambda (curr_symbol ())) 
+                and parse_abs() = 
+                            let x = get_var_str() in 
+                            skip '.';
+                            let l = parse_lambda() in
+                            Abs(x, l)        
+                and parse_var() = 
+                        let x = get_var_str() in 
+                        Var(x) in
+                let make_lambda x =               
+                        let lambda = (get_lambda (x)) in
+                        let reflambda = ref lambda in
+                        while ( has_next() && (curr_symbol() <> ')')) do
+                                reflambda := parse_app (!reflambda);
+                        done;
+                        !reflambda in
+            make_lambda (curr_symbol()) in   
+            parse_lambda() in
+    parse (x^";");;
+
 
 let rec string_of_lambda lambda = 
         match lambda with

@@ -1,6 +1,7 @@
 open Hw1
 
 module SS = Set.Make(String);;
+module StringMap = Map.Make(String);;
 
 let free_vars l = 
     let rec get_fv l bound = 
@@ -50,6 +51,12 @@ let rec is_normal_form l =
                         | _ -> true
         in check l;;   
 
+ let i = ref 0;;
+        let get_fresh_var () = 
+            let fresh_var = ("τ" ^ string_of_int !i) in 
+            i := !i + 1;
+            fresh_var;;
+
 (* m[x := n] *)
 let rec substitute n m x =
     match m with
@@ -57,27 +64,23 @@ let rec substitute n m x =
         | App(p, q) -> App((substitute n p x), (substitute n q x))
         | Abs(y, p) -> if (x <> y) then Abs(y, (substitute n p x)) else m;;
 
- let rec is_alpha_equivalent l1 l2 = 
-    let i = ref 0 in
-    let get_fresh_var () = 
-        let fresh_var = ("ξ" ^ string_of_int !i) in 
-        i := !i + 1;
-        Var(fresh_var) in
+let is_alpha_equivalent l1 l2 = 
+        let add_new_var var fresh map =
+                if (StringMap.mem var map) then map
+                                                              else (StringMap.add var fresh map) in 
+        let equal x1 map1 x2 map2 = 
+                let mapped x mp = 
+                        if (StringMap.mem x mp) then (StringMap.find x mp)
+                                                                else x in 
+                (mapped x1 map1) = (mapped x2 map2) in                                                        
 
-    match (l1, l2) with
-        | (Var x, Var y) -> (x = y)
-        | (App(p1, q1), App(p2, q2)) -> (is_alpha_equivalent p1 p2) && (is_alpha_equivalent q1 q2)
-        | (Abs(x, p), Abs(y, q)) -> let fresh_var = get_fresh_var () in  
-                                                   is_alpha_equivalent (substitute fresh_var p x) (substitute fresh_var q y)
-        | _ -> false;; 
-
-module StringMap = Map.Make(String);;
-
- let i = ref 0;;
-        let get_fresh_var () = 
-            let fresh_var = ("τ" ^ string_of_int !i) in 
-            i := !i + 1;
-            fresh_var;;
+        let rec check l1 map1 l2 map2 = 
+                match l1, l2 with
+                        | Var x1, Var x2 -> equal x1 map1 x2 map2
+                        | App(p1, p2), App(q1, q2) -> (check p1 map1 q1 map2) && (check p2 map1 q2 map2)
+                        | Abs(x1, p1), Abs(x2, p2) -> (check p1 (add_new_var x1 ("τ"^x1) map1) p2 (add_new_var x2 ("τ"^x1) map2))
+                        | _ -> false in 
+        check l1 StringMap.empty l2 StringMap.empty;;
 
 let rec get_eqv l map = 
                 match l with

@@ -37,13 +37,6 @@ let lambda2 = lambda_of_string("(\\f.\\x.(f (f (x))))");;
 
 let y_combinator = Abs("f", App(Abs("x", App(Var "f", App(Var "x", Var "x"))), Abs("x", App(Var "f", App(Var "x", Var "x")))));;
 
-match (infer_simp_type (y_combinator)) with 
-        | Some inference -> let system = fst inference in 
-                                       let t = snd inference in 
-                                       print_string("Some\n" ^ (string_of_term(simp_type_to_algebraic_term t)) ^ "\n");
-                                       print_system system
-        | None -> print_string ("None\n");; 
-
 (* -------------------------------------------------------------- *)
 let check_algorithm_w l = 
     let result = algorithm_w l in
